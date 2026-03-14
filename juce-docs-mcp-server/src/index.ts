@@ -23,8 +23,6 @@ server.registerResource(
   new ResourceTemplate("juce://class/{className}", { list: undefined }),
   {},
   async (uri, { className }) => {
-    console.error(`Fetching documentation for class: ${className}`);
-
     // Ensure className is a string
     const classNameStr = Array.isArray(className) ? className[0] : className;
     const doc = await fetchClassDocumentation(classNameStr);
@@ -55,8 +53,6 @@ server.registerResource(
 
 // Resource for listing all available classes
 server.registerResource("class-list", "juce://classes", {}, async (uri) => {
-  console.error("Fetching list of all JUCE classes");
-
   const classes = await fetchClassList();
   const classLinks = classes.map((c) => `- [${c}](juce://class/${c})`).join("\n");
 
@@ -80,8 +76,6 @@ server.registerTool(
     inputSchema: z.object({ query: z.string() }),
   },
   async ({ query }) => {
-    console.error(`Searching for classes matching: ${query}`);
-
     const results = await searchClasses(query);
 
     if (results.length === 0) {
@@ -114,8 +108,6 @@ server.registerTool(
     inputSchema: z.object({ className: z.string() }),
   },
   async ({ className }) => {
-    console.error(`Fetching documentation for class: ${className}`);
-
     const doc = await fetchClassDocumentation(className);
 
     if (!doc) {
@@ -158,12 +150,8 @@ server.registerPrompt(
 
 // Start the server
 try {
-  console.error("Starting JUCE Documentation MCP Server...");
-
   const transport = new StdioServerTransport();
   await server.connect(transport);
-
-  console.error("Server connected and ready to receive requests.");
 } catch (error) {
   console.error("Error starting server:", error);
   process.exit(1);
